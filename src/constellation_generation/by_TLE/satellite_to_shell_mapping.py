@@ -51,8 +51,9 @@ def read_xml_file(file_path):
 # this function returns a collection of shell objects that have established corresponding relationships
 def satellite_to_shell_mapping(constellation_name):
     # constellation launches information file
-    constellation_launches_file = "config/TLE_constellation/" + constellation_name + \
-                                  "/launches.xml"
+    #constellation_launches_file = "config/TLE_constellation/" + constellation_name + \
+    #                              "/launches.xml"
+    constellation_launches_file = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/config/TLE_constellation/Starlink/launches.xml"
     # read constellation launches information
     constellation_launches_information = read_xml_file(constellation_launches_file)
     # the following launches list is used to store launch class objects generated based on satellite launch batch data
@@ -78,9 +79,10 @@ def satellite_to_shell_mapping(constellation_name):
         shells.append(SHELL.shell(lai[0] , lai[1] , "shell" + str(count)))
         count = count + 1
 
-
+    # todo:xml的更新时间截止是2023，但是下载的tle.h5数据是截止到当前时间，这样会不会有误差？建议更新xml到截止时间
     # TLE data file
-    constellation_json_TLE_file = "config/TLE_constellation/" + constellation_name + "/tle.h5"
+    #constellation_json_TLE_file = "config/TLE_constellation/" + constellation_name + "/tle.h5"
+    constellation_json_TLE_file = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/config/TLE_constellation/Starlink/tle.h5"
     with h5py.File(constellation_json_TLE_file, 'a') as file:
         current_date = datetime.now()
         formatted_date = current_date.strftime('%Y%m%d')

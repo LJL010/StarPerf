@@ -15,7 +15,8 @@ import h5py
 
 def get_h3_all_cells():
     # create an hdf5 file (if the file does not exist, it will be created; if it exists, it will be overwritten)
-    with h5py.File('data/h3_cells_id_res0-4.h5', 'w') as file:
+    # with h5py.File('data/h3_cells_id_res0-4.h5', 'w') as file:
+    with h5py.File('/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/data/h3_cells_id_res0-4.h5', 'w') as file:
         # a list collection composed of h3ids of all cells with resolution 0
         res0_cells = list(h3.get_res0_cells())
         # write res0_cells to file

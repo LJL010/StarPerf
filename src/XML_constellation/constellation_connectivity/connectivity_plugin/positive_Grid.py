@@ -68,7 +68,7 @@ def distance_two_satellites(satellite1 , satellite2 , t):
 # dT : the time interval
 def positive_Grid(constellation , dT):
 
-    file_path = "data/XML_constellation/" + constellation.constellation_name + ".h5"
+    file_path = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/data/XML_constellation/" + constellation.constellation_name + ".h5"
     with h5py.File(file_path, 'a') as file:
         # get a list of root-level group names
         root_group_names = list(file.keys())

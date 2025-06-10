@@ -31,7 +31,8 @@ class routing_policy_plugin_manager:
         # traverse this folder to obtain the names of all routing model plug-ins and store them in the self.plugins
         # collection.
         package_name = "src.TLE_constellation.constellation_routing.routing_policy_plugin"
-        plugins_path = package_name.replace(".", os.path.sep)  # the path where the plug-in is stored
+        #plugins_path = package_name.replace(".", os.path.sep)  # the path where the plug-in is stored
+        plugins_path = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/src/TLE_constellation/constellation_routing/routing_policy_plugin"
         for plugin_name in os.listdir(plugins_path):
             if plugin_name.endswith(".py"):
                 plugin_name = plugin_name[:-3]  # remove the file extension ".py"

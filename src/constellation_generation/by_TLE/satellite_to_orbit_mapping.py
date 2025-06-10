@@ -20,39 +20,50 @@ import jenkspy
 import src.TLE_constellation.constellation_entity.orbit as ORBIT
 import matplotlib.pyplot as plt
 
+import threading
+
+# 创建全局锁（适用于多线程）
+_global_lock = threading.Lock()
 # Parameter :
 # shells : a collection of shell objects that have established corresponding relationships
 # Return Value :
 # after the function is executed, the mapping relationship between satellite, orbit, and shell has been established
 # without any return value.
 def satellite_to_orbit_mapping(shells):
-    for sh in shells:
-        # extract the raan of all satellites in sh
-        raans = []
-        for sat in sh.satellites:
-            raans.append(sat.tle_json["RA_OF_ASC_NODE"])
-        raans = sorted(raans)
+    with _global_lock:
+        try:
+            for sh in shells:
+                # extract the raan of all satellites in sh
+                raans = []
+                for sat in sh.satellites:
+                    raans.append(sat.tle_json["RA_OF_ASC_NODE"])
+                raans = sorted(raans)
 
-        plt.plot(raans)
-        plt.ylabel('RAANS')
-        plt.show()
+                plt.plot(raans)
+                plt.ylabel('RAANS')
+                plt.show()
 
-        orbits_number = int(input('\t\t\tPlease enter the number of orbits (integer) based on the raan distribution result of '
-                              'the line chart : '))
-        breaks = jenkspy.jenks_breaks(values = raans, n_classes = orbits_number)
-        orbit_raans = [(breaks[i], breaks[i + 1]) for i in range(len(breaks) - 1)]
-        for ra_index, ra in enumerate(orbit_raans):
-            lower_bound = ra[0]
-            upper_bound = ra[1]
-            orbit = ORBIT.orbit(shell=sh , raan_lower_bound=lower_bound , raan_upper_bound=upper_bound)
-            for sat in sh.satellites:
-                if ra_index > 0:
-                    if sat.tle_json["RA_OF_ASC_NODE"] > lower_bound and sat.tle_json["RA_OF_ASC_NODE"] <= upper_bound:
-                        sat.orbit = orbit
-                        orbit.satellites.append(sat)
-                if ra_index == 0:
-                    if sat.tle_json["RA_OF_ASC_NODE"] >= lower_bound and sat.tle_json["RA_OF_ASC_NODE"] <= upper_bound:
-                        sat.orbit = orbit
-                        orbit.satellites.append(sat)
+                orbits_number = int(input('\t\t\tPlease enter the number of orbits (integer) based on the raan distribution result of '
+                                      'the line chart : '))
+                breaks = jenkspy.jenks_breaks(values = raans, n_classes = orbits_number)
+                orbit_raans = [(breaks[i], breaks[i + 1]) for i in range(len(breaks) - 1)]
+                for ra_index, ra in enumerate(orbit_raans):
+                    lower_bound = ra[0]
+                    upper_bound = ra[1]
+                    orbit = ORBIT.orbit(shell=sh , raan_lower_bound=lower_bound , raan_upper_bound=upper_bound)
+                    for sat in sh.satellites:
+                        if ra_index > 0:
+                            if sat.tle_json["RA_OF_ASC_NODE"] > lower_bound and sat.tle_json["RA_OF_ASC_NODE"] <= upper_bound:
+                                sat.orbit = orbit
+                                orbit.satellites.append(sat)
+                        if ra_index == 0:
+                            if sat.tle_json["RA_OF_ASC_NODE"] >= lower_bound and sat.tle_json["RA_OF_ASC_NODE"] <= upper_bound:
+                                sat.orbit = orbit
+                                orbit.satellites.append(sat)
 
-            sh.orbits.append(orbit)
+                    sh.orbits.append(orbit)
+        except Exception as e:
+            raise e # 可选：决定是否继续抛出异常
+        finally:
+            # 关闭所有图表（释放资源）
+            plt.close('all')

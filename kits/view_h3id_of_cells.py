@@ -14,7 +14,8 @@ import numpy as np
 
 def view_h3id_of_cells():
     # read the delay matrix data in the h5 file
-    with h5py.File('data/h3_cells_id_res0-4.h5', 'r') as file:
+    # with h5py.File('data/h3_cells_id_res0-4.h5', 'r') as file:
+    with h5py.File('/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/data/h3_cells_id_res0-4.h5', 'r') as file:
         # read dataset
         res0_cells = np.array(file['res0_cells']).tolist()
         print('\t\t\tresolution = 0 cells : ')

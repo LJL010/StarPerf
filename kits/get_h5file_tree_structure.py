@@ -22,5 +22,5 @@ def print_hdf5_structure(group, indent=0):
 
 
 if __name__ == '__main__':
-    with h5py.File('../data/XML_constellation/Kuiper.h5', 'r') as file:
+    with h5py.File('../data/TLE_constellation/Starlink.h5', 'r') as file:
         print_hdf5_structure(file)

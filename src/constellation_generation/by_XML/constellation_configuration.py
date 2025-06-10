@@ -45,7 +45,8 @@ def read_xml_file(file_path):
 # constellation_name : the name of the constellation to be generated, used to read the xml configuration file
 def constellation_configuration(dT , constellation_name):
     # the path to the constellation configuration information file .xml file
-    xml_file_path = "config/XML_constellation/" + constellation_name + ".xml"
+    # xml_file_path = "config/XML_constellation/" + constellation_name + ".xml"
+    xml_file_path = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/config/XML_constellation/Starlink.xml"
     # read constellation configuration information
     constellation_configuration_information = read_xml_file(xml_file_path)
     # convert string to int type
@@ -53,7 +54,7 @@ def constellation_configuration(dT , constellation_name):
     shells = []
     # determine whether the .h5 file of the delay and satellite position data of the current constellation exists. If
     # it exists, delete the file and create an empty .h5 file. If it does not exist, directly create an empty .h5 file.
-    file_path = "data/XML_constellation/" + constellation_name + ".h5"
+    file_path = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/data/XML_constellation/" + constellation_name + ".h5"
     if os.path.exists(file_path):
         # if the .h5 file exists, delete the file
         os.remove(file_path)
