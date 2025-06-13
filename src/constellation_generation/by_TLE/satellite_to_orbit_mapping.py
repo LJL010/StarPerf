@@ -30,40 +30,54 @@ _global_lock = threading.Lock()
 # after the function is executed, the mapping relationship between satellite, orbit, and shell has been established
 # without any return value.
 def satellite_to_orbit_mapping(shells):
+    # 预定义的轨道数量列表
+    predefined_orbit_counts = [7, 1, 13, 5, 4, 20, 30, 20, 20, 17, 2, 20]
+
+    # 把交互的raans提前统计好，在下面直接使用
     with _global_lock:
         try:
-            for sh in shells:
+            for shell_index, sh in enumerate(shells):
+                # 检查是否有足够的预定义轨道数量
+                if shell_index >= len(predefined_orbit_counts):
+                    raise ValueError(f"没有足够的预定义轨道数量，shell索引 {shell_index} 超出范围")
+
+                # 获取当前shell对应的预定义轨道数量
+                orbits_number = predefined_orbit_counts[shell_index]
+
                 # extract the raan of all satellites in sh
                 raans = []
                 for sat in sh.satellites:
                     raans.append(sat.tle_json["RA_OF_ASC_NODE"])
                 raans = sorted(raans)
 
+                # 可选：仍然显示图表以便可视化
                 plt.plot(raans)
                 plt.ylabel('RAANS')
-                plt.show()
+                plt.title(f'Shell {shell_index} - Using {orbits_number} orbits')
+                plt.savefig(f'shell_{shell_index}_raans.png')  # 保存图表而不是显示
+                plt.close()  # 关闭图表以释放资源
 
-                orbits_number = int(input('\t\t\tPlease enter the number of orbits (integer) based on the raan distribution result of '
-                                      'the line chart : '))
-                breaks = jenkspy.jenks_breaks(values = raans, n_classes = orbits_number)
+                breaks = jenkspy.jenks_breaks(values=raans, n_classes=orbits_number)
                 orbit_raans = [(breaks[i], breaks[i + 1]) for i in range(len(breaks) - 1)]
                 for ra_index, ra in enumerate(orbit_raans):
                     lower_bound = ra[0]
                     upper_bound = ra[1]
-                    orbit = ORBIT.orbit(shell=sh , raan_lower_bound=lower_bound , raan_upper_bound=upper_bound)
+                    orbit = ORBIT.orbit(shell=sh, raan_lower_bound=lower_bound, raan_upper_bound=upper_bound)
                     for sat in sh.satellites:
                         if ra_index > 0:
-                            if sat.tle_json["RA_OF_ASC_NODE"] > lower_bound and sat.tle_json["RA_OF_ASC_NODE"] <= upper_bound:
+                            if sat.tle_json["RA_OF_ASC_NODE"] > lower_bound and sat.tle_json[
+                                "RA_OF_ASC_NODE"] <= upper_bound:
                                 sat.orbit = orbit
                                 orbit.satellites.append(sat)
                         if ra_index == 0:
-                            if sat.tle_json["RA_OF_ASC_NODE"] >= lower_bound and sat.tle_json["RA_OF_ASC_NODE"] <= upper_bound:
+                            if sat.tle_json["RA_OF_ASC_NODE"] >= lower_bound and sat.tle_json[
+                                "RA_OF_ASC_NODE"] <= upper_bound:
                                 sat.orbit = orbit
                                 orbit.satellites.append(sat)
 
                     sh.orbits.append(orbit)
         except Exception as e:
-            raise e # 可选：决定是否继续抛出异常
+            raise e  # 可选：决定是否继续抛出异常
         finally:
             # 关闭所有图表（释放资源）
             plt.close('all')

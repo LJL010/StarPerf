@@ -1,12 +1,3 @@
-'''
-
-Author : yunanhou
-
-Date : 2023/11/26
-
-Function : This script is used to view the TLE_data data of the constellation.
-
-'''
 import src.constellation_generation.by_TLE.download_TLE_data as DOWNLOAD_TLE_DATA
 import h5py
 from datetime import datetime
@@ -14,8 +5,6 @@ import numpy as np
 import json
 
 def view_constellation_TLE_data(constellation_name):
-    # download constellation TLE_data data
-    DOWNLOAD_TLE_DATA.download_TLE_data(constellation_name)
     file_path = '/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/config/TLE_constellation/' + constellation_name + '/tle.h5'
     with h5py.File(file_path, 'a') as file:
         current_date = datetime.now()
@@ -31,9 +20,9 @@ def view_constellation_TLE_data(constellation_name):
     print('\t\t\t2LE format TLE data : ')
     for tle in TLE_2LE:
         print("\t\t\t" , tle)
-    print('\t\t\tJSON format TLE data : ')
-    for tle in TLE_JSON:
-        print("\t\t\t" , tle)
+    # print('\t\t\tJSON format TLE data : ')
+    # for tle in TLE_JSON:
+    #     print("\t\t\t", tle)
 
 if __name__ == '__main__':
     view_constellation_TLE_data("Starlink")

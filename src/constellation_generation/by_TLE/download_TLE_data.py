@@ -47,6 +47,8 @@ Note: Note: These two download TLE data in two formats: 2LE and JSON.
       first and then stored in the h5 file. When reading data, the string needs to be converted into JSON before it can
       be used.
 '''
+import sys
+
 import requests
 import os
 import h5py
@@ -96,3 +98,6 @@ def download_TLE_data(constellation_name):
                 pass
     except requests.exceptions.RequestException as e:
         print(f"\t\t\tWhen downloading TLE data, an error occurred in the web page request: {e}")
+
+if __name__ == "__main__":
+    download_TLE_data("Starlink")

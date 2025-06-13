@@ -57,7 +57,7 @@ import json
 # download the current day's TLE data from the CelesTrak website
 def download_today_TLE_data(constellation_name):
     # h5 file path to save TLE data
-    file_path = 'config/TLE_constellation/' + constellation_name + '/tle.h5'
+    file_path = '/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/config/TLE_constellation/' + constellation_name + '/tle.h5'
     if not os.path.exists(file_path):
         with h5py.File(file_path, 'a') as file:
             pass
@@ -95,3 +95,6 @@ def download_today_TLE_data(constellation_name):
                 print('\t\t\tThe TLE data you downloaded already exists!')
     except requests.exceptions.RequestException as e:
         print(f"\t\t\tWhen downloading TLE data, an error occurred in the web page request: {e}")
+
+if __name__ == '__main__':
+    download_today_TLE_data("Starlink")

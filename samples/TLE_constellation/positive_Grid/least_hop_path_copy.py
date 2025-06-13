@@ -52,19 +52,22 @@ def least_hop_path(node):
     routingPolicyPluginManager.set_routing_policy("least_hop_path")
     # execute routing policy
     # todo:这里并没有壳层之间的配合，所以统计的最短跳数的结果肯定会少很多卫星
-    least_hop_path = routingPolicyPluginManager.execute_routing_policy(constellation.constellation_name, source,
-                                                                       target, constellation.shells[4])
+    for i in range(4):
+        least_hop_path = routingPolicyPluginManager.execute_routing_policy(constellation.constellation_name, source,
+                                                                           target, constellation.shells[4])
+        print("\t\t\tThe least hop path from ", source.user_name, " to ", target.user_name, " is ", least_hop_path)
+
 
     formatted_time3 = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"第{node}构建后的时间3:", formatted_time3)
 
-    print("\t\t\tThe least hop path from " , source.user_name  , " to " , target.user_name , " is " , least_hop_path)
-    # modify the source of the communication pair
-    target = USER.user(117.87, 40.95, "承德")
-    # execute routing policy
-    least_hop_path = routingPolicyPluginManager.execute_routing_policy(constellation.constellation_name, source,
-                                                                       target, constellation.shells[4])
-    print("\t\t\tThe least hop path from " , source.user_name  , " to " , target.user_name , " is " , least_hop_path)
+    # print("\t\t\tThe least hop path from " , source.user_name  , " to " , target.user_name , " is " , least_hop_path)
+    # # modify the source of the communication pair
+    # target = USER.user(117.87, 40.95, "承德")
+    # # execute routing policy
+    # least_hop_path = routingPolicyPluginManager.execute_routing_policy(constellation.constellation_name, source,
+    #                                                                    target, constellation.shells[4])
+    # print("\t\t\tThe least hop path from " , source.user_name  , " to " , target.user_name , " is " , least_hop_path)
 
 
 if __name__ == "__main__":
