@@ -18,7 +18,7 @@ from skyfield.api import load, EarthSatellite
 # year, month, day, hour, minute, second : to calculate the time corresponding to the satellite position
 def get_satellite_position(TLE, year, month, day, hour, minute, second):
     # load ephemeris data
-    planets = load('de421.bsp')
+    #planets = load('de421.bsp')
     ts = load.timescale()
     # specify a specific UTC time point
     t = ts.utc(year, month, day, hour, minute, second)

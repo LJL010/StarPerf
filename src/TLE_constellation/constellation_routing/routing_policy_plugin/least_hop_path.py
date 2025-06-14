@@ -34,7 +34,7 @@ def distance_between_satellite_and_user(groundstation , satellite , t):
 
 
 def least_hop_path(constellation_name , source , target , sh , t):
-    file_path = "data/TLE_constellation/" + constellation_name + ".h5"  # h5 file path and name
+    file_path = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/data/TLE_constellation/" + constellation_name + ".h5"  # h5 file path and name
     # read the delay matrix of the shell layer of the constellation constellation at time t
     with h5py.File(file_path, 'r') as file:
         # access the existing first-level subgroup delay group
@@ -93,4 +93,17 @@ def least_hop_path(constellation_name , source , target , sh , t):
     # using Dijkstra's algorithm is the path with the least number of hops.
     least_hop_path = nx.dijkstra_path(G, source=start_satellite, target=end_satellite)
 
-    return least_hop_path
+    # 将字符串ID转换为卫星实体
+    satellite_id_to_obj = {sat.id: sat for sat in sh.satellites}
+    least_hop_path_sats = []
+
+    for node_str in least_hop_path:
+        # 从"satellite_123"格式中提取数字ID
+        sat_id = int(node_str.split('_')[-1])
+        if sat_id in satellite_id_to_obj:
+            least_hop_path_sats.append(satellite_id_to_obj[sat_id])
+        else:
+            raise ValueError(f"卫星ID {sat_id} 不在指定shell层中")
+
+    return least_hop_path_sats
+
