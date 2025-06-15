@@ -5,6 +5,7 @@ import os
 import signal
 import threading
 from queue import Queue
+import queue
 
 from samples.TLE_constellation.positive_Grid.least_hop_path import least_hop_path
 
@@ -124,7 +125,7 @@ def UDP_video_forwarding(constellation_name, source, target, sh, t):
 
             except socket.timeout:
                 # 超时检查
-                if time.time() - last_receive_time > 30:  # 30秒无数据视为结束
+                if time.time() - last_receive_time > 5:  # 30秒无数据视为结束
                     print("长时间无数据，传输可能已完成")
                     break
                 continue
@@ -138,23 +139,26 @@ def UDP_video_forwarding(constellation_name, source, target, sh, t):
     def write_to_ffmpeg(ffmpeg_stdin):
         last_write_time = time.time()
         consecutive_empty_writes = 0
-
+        queue_check_count = 0  # 新增计数器
         while True:
             try:
-                # 如果队列中有数据，取出并写入FFmpeg
-                if not packet_queue.empty():
-                    data = packet_queue.get(timeout=5)
-                    ffmpeg_stdin.write(data)
-                    ffmpeg_stdin.flush()
-                    last_write_time = time.time()
-                    consecutive_empty_writes = 0
+                # 优先处理队列中的数据
+                if not packet_queue.empty() or queue_check_count < 10:
+                    if not packet_queue.empty():
+                        data = packet_queue.get(timeout=1)  # 缩短超时时间
+                        ffmpeg_stdin.write(data)
+                        ffmpeg_stdin.flush()
+                        last_write_time = time.time()
+                        consecutive_empty_writes = 0
+                        queue_check_count = 0  # 重置计数器
+                    else:
+                        queue_check_count += 1  # 记录空队列检查次数
+                        time.sleep(0.1)  # 短暂休眠
                 else:
                     consecutive_empty_writes += 1
-                    if consecutive_empty_writes > 6:  # 约30秒无数据
+                    if consecutive_empty_writes > 3:  # 进一步缩短阈值
                         print("向FFmpeg写入数据超时")
                         break
-
-                    # 短暂休眠，避免CPU占用过高
                     time.sleep(0.5)
 
             except Exception as e:
@@ -223,7 +227,7 @@ def UDP_video_forwarding(constellation_name, source, target, sh, t):
             '-c:a', 'aac',  # 音频编码为AAC
             '-b:a', '128k',  # 音频比特率
             '-f', 'mpegts',  # 容器格式
-            f"udp://{first_sat_ip}:{first_sat_port}?pkt_size=1316&buffer_size=65536"  # UDP参数优化
+            f"udp://{first_sat_ip}:{first_sat_port}?pkt_size=1316&buffer_size=65536&fifo_size=131072"  # UDP参数优化
         ]
         print(f"执行命令: {' '.join(ffmpeg_cmd)}")
         ffmpeg_process = subprocess.Popen(ffmpeg_cmd,
@@ -274,7 +278,7 @@ def UDP_video_forwarding(constellation_name, source, target, sh, t):
 
                     sat_socket.sendto(data, (next_ip, next_port))
                     # 减少打印频率，避免影响性能
-                    print(f"Sat{sat_id} → Sat{next_sat.id} 转发视频包")
+                    print(f"{next_ip}:{next_port} 收到视频包！")
                 except socket.timeout:
                     # 超时继续等待
                     continue
@@ -322,7 +326,7 @@ def UDP_video_forwarding(constellation_name, source, target, sh, t):
                 last_activity_time = time.time()
 
             # 检查是否长时间没有活动
-            if time.time() - last_activity_time > 60:  # 60秒无活动
+            if time.time() - last_activity_time > 10:  # 60秒无活动
                 print("长时间没有数据包活动，退出主循环")
                 break
 
@@ -334,16 +338,21 @@ def UDP_video_forwarding(constellation_name, source, target, sh, t):
         # 清理资源
         signal.alarm(0)  # 确保闹钟被关闭
 
-        # 关闭FFmpeg接收进程的stdin
+        # 先停止数据写入，再关闭进程
         if ffmpeg_receive_process and ffmpeg_receive_process.stdin:
             try:
+                # 发送EOF信号而非直接关闭stdin
+                ffmpeg_receive_process.stdin.write(b'')
+                ffmpeg_receive_process.stdin.flush()
+                # 增加等待时间确保数据写入
+                time.sleep(5)  # 延长至5秒
                 ffmpeg_receive_process.stdin.close()
             except Exception:
                 pass
 
         # 等待所有线程结束
         print("等待所有线程结束...")
-        time.sleep(2)  # 给线程一些时间完成
+        time.sleep(5)  # 给线程一些时间完成
 
         for sock in sockets.values():
             sock.close()
