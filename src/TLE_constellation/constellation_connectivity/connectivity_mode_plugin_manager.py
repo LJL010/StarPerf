@@ -33,7 +33,7 @@ class connectivity_mode_plugin_manager:
         # collection.
 
         package_name = "src.TLE_constellation.constellation_connectivity.connectivity_plugin"
-        plugins_path = package_name.replace(".", os.path.sep)  # the path where the plug-in is stored
+        plugins_path = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/src/TLE_constellation/constellation_connectivity/connectivity_plugin"  # the path where the plug-in is stored
         for plugin_name in os.listdir(plugins_path):
             if plugin_name.endswith(".py"):
                 plugin_name = plugin_name[:-3]  # remove the file extension ".py"

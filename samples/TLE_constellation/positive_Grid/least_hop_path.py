@@ -13,13 +13,8 @@ import src.TLE_constellation.constellation_connectivity.connectivity_mode_plugin
 import src.TLE_constellation.constellation_routing.routing_policy_plugin_manager as routing_policy_plugin_manager
 
 
-def least_hop_path():
+def least_hop_path(constellation_name, source, target, sh, t):
     dT = 1000
-    constellation_name = "Starlink"
-    # the source of the communication pair
-    source = USER.user(0.00, 51.30, "London")
-    # the target of the communication pair
-    target = USER.user(-74.00, 40.43, "NewYork")
     # generate the constellations
     constellation = constellation_configuration.constellation_configuration(dT, constellation_name=constellation_name)
     # initialize the connectivity mode plugin manager
@@ -33,13 +28,10 @@ def least_hop_path():
     # execute routing policy
     least_hop_path = routingPolicyPluginManager.execute_routing_policy(constellation.constellation_name, source,
                                                                        target, constellation.shells[4])
-    print("\t\t\tThe least hop path from " , source.user_name  , " to " , target.user_name , " is " , least_hop_path)
-    # modify the source of the communication pair
-    source = USER.user(116.41, 39.9, "Beijing")
-    # execute routing policy
-    least_hop_path = routingPolicyPluginManager.execute_routing_policy(constellation.constellation_name, source,
-                                                                       target, constellation.shells[4])
-    print("\t\t\tThe least hop path from " , source.user_name  , " to " , target.user_name , " is " , least_hop_path)
+    path_ids = [sat.id for sat in least_hop_path]
+    print("\t\t\tThe least hop path from " , source.user_name  , " to " , target.user_name , " is " , path_ids)
+
+    return least_hop_path
 
 
 if __name__ == "__main__":

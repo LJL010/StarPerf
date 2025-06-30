@@ -51,7 +51,7 @@ def read_xml_file(file_path):
 # this function returns a collection of shell objects that have established corresponding relationships
 def satellite_to_shell_mapping(constellation_name):
     # constellation launches information file
-    constellation_launches_file = "config/TLE_constellation/" + constellation_name + \
+    constellation_launches_file = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/config/TLE_constellation/" + constellation_name + \
                                   "/launches.xml"
     # read constellation launches information
     constellation_launches_information = read_xml_file(constellation_launches_file)
@@ -80,7 +80,7 @@ def satellite_to_shell_mapping(constellation_name):
 
 
     # TLE data file
-    constellation_json_TLE_file = "config/TLE_constellation/" + constellation_name + "/tle.h5"
+    constellation_json_TLE_file = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/config/TLE_constellation/" + constellation_name + "/tle.h5"
     with h5py.File(constellation_json_TLE_file, 'a') as file:
         current_date = datetime.now()
         formatted_date = current_date.strftime('%Y%m%d')

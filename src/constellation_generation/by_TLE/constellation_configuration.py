@@ -21,7 +21,7 @@ import h5py
 # constellation_name : the name of the constellation to be generated, used to read the TLE data file
 def constellation_configuration(dT , constellation_name):
     # download TLE data for the current day
-    DOWNLOAD_TLE_DATA.download_TLE_data(constellation_name)
+    #DOWNLOAD_TLE_DATA.download_TLE_data(constellation_name)
     # establish the correspondence between satellites and shells
     shells = SATELLITE_TO_SHELL_MAPPING.satellite_to_shell_mapping(constellation_name)
     # establish the correspondence between satellites and orbits
@@ -36,7 +36,7 @@ def constellation_configuration(dT , constellation_name):
 
     # determine whether the .h5 file of the delay and satellite position data of the current constellation exists. If
     # it exists, delete the file and create an empty .h5 file. If it does not exist, directly create an empty .h5 file.
-    file_path = "data/TLE_constellation/" + constellation_name + ".h5"
+    file_path = "/Users/bytedance/Desktop/StarPerf_Simulator/StarPerf_Simulator/data/TLE_constellation/" + constellation_name + ".h5"
     if os.path.exists(file_path):
         # if the .h5 file exists, delete the file
         os.remove(file_path)
@@ -66,6 +66,8 @@ def constellation_configuration(dT , constellation_name):
         satellite_id = 1
         for satellite in constellation.shells[count-1].satellites:
             satellite.id = satellite_id
+            satellite.ip = f"127.0.0.1"
+            satellite.port = 1234 + satellite.id
             satellite_id = satellite_id + 1
             TLE_2LE = []
             TLE_2LE.append(satellite.tle_2le[0])

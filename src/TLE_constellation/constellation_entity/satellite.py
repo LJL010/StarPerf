@@ -36,3 +36,6 @@ class satellite:
         self.ISL = []
         # the id number of the satellite
         self.id = -1
+        safe_id = self.id % 255
+        self.ip = f"127.0.0.{safe_id}"
+        self.port = 5000 + self.id
